@@ -14,6 +14,10 @@ function openReturn(order, lines) {
   if (lines.length === 0) {
     throw new Error('a return must cover at least one line');
   }
+  // Story D (ODK-170): Refuse returns against cancelled orders
+  if (order.status === 'cancelled') {
+    throw new Error('cannot open a return against a cancelled order');
+  }
 
   // Lọc ra những lines KHÔNG phải final-clearance
   const returnableLines = lines.filter(line => !line.finalClearance);
