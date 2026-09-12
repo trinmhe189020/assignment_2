@@ -11,27 +11,22 @@
  * @returns {object} the new return request
  */
 function openReturn(order, lines) {
-  if (lines.length === 0) {
-    throw new Error('a return must cover at least one line');
-  }
-  // Story D (ODK-170): Refuse returns against cancelled orders
   if (order.status === 'cancelled') {
     throw new Error('cannot open a return against a cancelled order');
   }
-
+  if (lines.length === 0) {
+    throw new Error('a return must cover at least one line');
+  }
   // Lọc ra những lines KHÔNG phải final-clearance
   const returnableLines = lines.filter(line => !line.finalClearance);
-
-  // Nếu TẤT CẢ đều là final-clearance → không có gì để return
   if (returnableLines.length === 0) {
     throw new Error(
       'a return cannot be opened: all lines are final-clearance items'
     );
   }
-
   return {
     orderId: order.id,
-    lines: returnableLines,   // chỉ giữ lines bình thường
+    lines: returnableLines,
     raisedAt: new Date().toISOString(),
     approvedBy: null,
     approvedAt: null,
